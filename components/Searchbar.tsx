@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: 20,
     marginTop: 20,
+    marginBottom: 20,
   },
   searchbar: {
     backgroundColor: "#E4E4e4",
