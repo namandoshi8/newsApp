@@ -14,16 +14,23 @@ import axios from "axios";
 import Loading from "@/components/Loading";
 import { Colors } from "@/constants/Colors";
 import Moment from "moment";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 type Props = {};
 
 const NewsDetils = (props: Props) => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [news, setNews] = useState<NewsDataType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [bookmark, setBookmark] = useState<Boolean>();
 
   useEffect(() => {
     getNewsData();
   }, []);
+  useEffect(() => {
+    if (!isLoading) {
+      renderBookmark(news[0].article_id);
+    }
+  }, [isLoading]);
 
   async function getNewsData() {
     try {
@@ -43,6 +50,50 @@ const NewsDetils = (props: Props) => {
     }
   }
 
+  async function saveBookmark(newsId: string) {
+    setBookmark(true);
+    await AsyncStorage.getItem("bookmark").then((token) => {
+      const res = JSON.parse(token);
+
+      if (res !== null) {
+        let data = res.find((value: string) => value === newsId);
+        if (data == null) {
+          res.push(newsId);
+          AsyncStorage.setItem("bookmark", JSON.stringify(res));
+          alert("Bookmarked");
+          console.log("Bookmark data: ", res);
+        }
+      } else {
+        let bookmark = [];
+        bookmark.push(newsId);
+        AsyncStorage.setItem("bookmark", JSON.stringify(bookmark));
+        alert("Bookmarked");
+        console.log("Bookmark data: ", bookmark);
+      }
+    });
+  }
+
+  async function removeBookmark(newsId: string) {
+    setBookmark(false);
+    const bookmark = await AsyncStorage.getItem("bookmark").then((token) => {
+      const res = JSON.parse(token);
+
+      return res.filter((value: string) => value !== newsId);
+    });
+    await AsyncStorage.setItem("bookmark", JSON.stringify(bookmark));
+    alert("Removed from bookmarks");
+  }
+
+  async function renderBookmark(newsId: string) {
+    await AsyncStorage.getItem("bookmark").then((token) => {
+      const res = JSON.parse(token);
+      if (res !== null) {
+        let data = res.find((value: string) => value === newsId);
+        return data == null ? setBookmark(false) : setBookmark(true);
+      }
+    });
+  }
+
   return (
     <>
       <Stack.Screen
@@ -53,8 +104,18 @@ const NewsDetils = (props: Props) => {
             </TouchableOpacity>
           ),
           headerRight: () => (
-            <TouchableOpacity onPress={() => {}}>
-              <Ionicons name="heart-outline" size={24} />
+            <TouchableOpacity
+              onPress={() => {
+                bookmark
+                  ? removeBookmark(news[0].article_id)
+                  : saveBookmark(news[0].article_id);
+              }}
+            >
+              <Ionicons
+                name={bookmark ? "heart" : "heart-outline"}
+                size={24}
+                color={bookmark ? "red" : Colors.black}
+              />
             </TouchableOpacity>
           ),
           title: "",
