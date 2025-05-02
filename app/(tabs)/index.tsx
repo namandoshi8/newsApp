@@ -16,7 +16,6 @@ import BreakingNews from "@/components/BreakingNews";
 import Categories from "@/components/Categories";
 import NewsList from "@/components/NewsList";
 import Loading from "@/components/Loading";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 type Props = {};
 
@@ -79,7 +78,7 @@ const Page = (props: Props) => {
   return (
     <ScrollView style={[styles.container, { paddingTop: safeTop }]}>
       <Header />
-      <Searchbar withHorrizontalPadding />
+      {/* <Searchbar withHorrizontalPadding /> */}
       {isLoading ? (
         <>
           <Loading />

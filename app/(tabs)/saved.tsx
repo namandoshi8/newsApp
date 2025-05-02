@@ -28,7 +28,8 @@ const Page = (props: Props) => {
     await AsyncStorage.getItem("bookmark").then(async (token) => {
       const res = JSON.parse(token);
       setIsLoading(true);
-      if (res) {
+      console.log("Res: ", res);
+      if (res.length !== 0) {
         console.log("Bookmark data: ", res);
         let query_string = res.join(",");
         console.log("Query string: ", query_string);
@@ -37,15 +38,18 @@ const Page = (props: Props) => {
           `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_NEWS_API_KEY}&id=${query_string}`
         );
         const data = response.data;
+        console.log("Response: ", response);
+        console.log("Data: ", data);
         if (data) {
           setBookmarkNews(data.results);
           // console.log("Data fetched successfully: \n", data.results);
           setIsLoading(false);
-        } else {
-          console.log("No data found");
-          setBookmarkNews([]);
-          setIsLoading(false);
         }
+      } else {
+        console.log("No data found");
+        setBookmarkNews([]);
+        setIsLoading(false);
+        return;
       }
     });
   }
@@ -61,6 +65,10 @@ const Page = (props: Props) => {
       <View style={styles.container}>
         {isLoading ? (
           <Loading />
+        ) : bookmarkNews.length === 0 ? (
+          <View style={styles.noNews}>
+            <Text style={styles.noNewsText}>No saved NEWS</Text>
+          </View>
         ) : (
           <>
             <FlatList
@@ -94,5 +102,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 20,
+  },
+  noNews: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noNewsText: {
+    fontSize: 20,
+    // fontWeight: "bold",
+    color: "#000",
   },
 });
