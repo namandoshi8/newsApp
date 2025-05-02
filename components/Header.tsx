@@ -10,7 +10,8 @@ const Header = (props: Props) => {
     <View style={styles.container}>
       <View style={styles.userInfo}>
         <Image
-          source={{ uri: "https://i.pravatar.cc/150" }}
+          // source={"@/assets/images/user.png"}
+          source={require("@/assets/images/user.png")}
           style={styles.image}
         />
         <View style={{ gap: 3 }}>

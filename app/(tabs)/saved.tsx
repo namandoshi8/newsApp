@@ -29,7 +29,7 @@ const Page = (props: Props) => {
       const res = JSON.parse(token);
       setIsLoading(true);
       console.log("Res: ", res);
-      if (res.length !== 0) {
+      if (res) {
         console.log("Bookmark data: ", res);
         let query_string = res.join(",");
         console.log("Query string: ", query_string);
@@ -42,14 +42,14 @@ const Page = (props: Props) => {
         console.log("Data: ", data);
         if (data) {
           setBookmarkNews(data.results);
-          // console.log("Data fetched successfully: \n", data.results);
+          console.log("Data fetched successfully: \n", data.results);
           setIsLoading(false);
+        } else {
+          console.log("No data found");
+          setBookmarkNews([]);
+          setIsLoading(false);
+          return;
         }
-      } else {
-        console.log("No data found");
-        setBookmarkNews([]);
-        setIsLoading(false);
-        return;
       }
     });
   }
